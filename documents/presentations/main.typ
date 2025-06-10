@@ -1,4 +1,4 @@
-#import "template.typ": template, slide_template, r
+#import "assets/template.typ": template, slide_template, r
 
 #let lightgray = rgb("#f0f0f0")
 

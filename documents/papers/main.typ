@@ -1,4 +1,4 @@
-#import "template.typ": template
+#import "assets/template.typ": template
 
 #show: template.with(
   title: [
