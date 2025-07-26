@@ -18,7 +18,7 @@
     stretch: 90%
   )
 
-  set list(spacing: 1.3em)
+  // set list(spacing: 1.3em)
   set par(leading: 0.5em)
   
   let refcol = rgb("#8b8b8b")
@@ -39,7 +39,7 @@
   show figure.caption: it => {
     set text(size: 12pt, style: "italic")
     set align(left)
-    h(1em)
+    // h(1em)
     it.body
   }
 
@@ -77,7 +77,8 @@
 #let citebox(fill: none) = {
   grid.cell(
     fill: fill,
-    inset: (top: 0em, bottom: 0em, left: 1em, right: 2em),
+    inset: (top: 0em, bottom: 0.5em, left: 1em, right: 2em),
+    align: bottom,
     [
       #set text(7pt)
       #context if pagerefs.get().len() > 0 {
@@ -114,13 +115,13 @@
       rightbox(fill: rightcolor)[#rightcontent],
       citebox(fill: rightcolor),
     )
+
     #context place(
-      dx: 0.8%, dy:-3.20%, [
+      dx: 98%, dy:-3.20%, [
       #let col = luma(40%)
       #set text(12pt, col, weight: "bold")
-      // #overline(stroke: col + 1pt, extent: 1pt, offset: -11pt)[
-        #here().page()
-      // ]
+      #let i = here().page()
+      #if(i) > 1 [#i]
     ])
   ]
 }
