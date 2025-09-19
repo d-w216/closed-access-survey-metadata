@@ -1,9 +1,11 @@
 ---
-title: "SONA-survey-response"
+title: "response-day-time"
 author: "Daniel Wagner"
 format: 
   html:
     embed-resources: true
+    code-fold: true
+    code-link: true
 editor: visual
 ---
 
@@ -11,7 +13,7 @@ editor: visual
 
 ## load packages
 
-```{r}
+```{r,message=FALSE}
 #load packages
 library(tidyverse)
 library(ggplot2)
