@@ -1,0 +1,185 @@
+---
+title: "SONA-survey-response"
+author: "Daniel Wagner"
+format: 
+  html:
+    embed-resources: true
+editor: visual
+---
+
+# SONA-Survey-response-times
+
+## load packages
+
+```{r}
+#load packages
+library(tidyverse)
+library(ggplot2)
+library(ggtext)
+library(lubridate)
+library(dplyr)
+library(patchwork) 
+library(ggnewscale) 
+
+```
+
+## load data
+
+```{r}
+
+bio <- read.csv("../data/raw/bio-response-time.csv", sep = ";")
+
+blue <- read.csv("../data/raw/blue-response-time.csv", sep = ";")
+
+btf23 <- read.csv("../data/raw/btf23-response-time.csv", sep = ";")
+
+```
+
+## A look at all surveys - merged (3)
+
+```{r}
+
+# Beispiel-Daten
+df1 <- bio
+df2 <- blue
+df3 <- btf23
+
+df <- bind_rows(df1, df2, df3)
+df$DateTime <- dmy_hm(paste(df$Date2, df$Time))
+df$Hour <- hour(df$DateTime)
+df$DayOfWeek <- wday(df$DateTime, label = TRUE, abbr = FALSE)
+
+# Funktion für einzelnen Heatmap-Plot mit eigener Farbe
+plot_heatmap <- function(data, title, fill_color){
+  ggplot(data, aes(x = Hour, y = DayOfWeek, fill = Count)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(low = "white", high = fill_color) +
+    labs(title = title, x = "Hour of Day", y = "Day of Week", fill = "Count") +
+    theme_gray()
+}
+
+# Heatmap-Daten pro Source
+heat1 <- df %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+
+# Erstelle einzelne Heatmaps
+p1 <- plot_heatmap(heat1, "merge 3 innov Spaces", "darkgreen")
+
+# Kombiniere Plots nebeneinander
+p1
+
+```
+
+## A look at the surveys
+
+```{r}
+
+# Beispiel-Daten
+df1 <- bio
+df2 <- blue
+df3 <- btf23
+
+df1$Source <- "BioBall"
+df2$Source <- "BlueBio"
+df3$Source <- "BTF23"
+
+df <- bind_rows(df1, df2, df3)
+df$DateTime <- dmy_hm(paste(df$Date2, df$Time))
+df$Hour <- hour(df$DateTime)
+df$DayOfWeek <- wday(df$DateTime, label = TRUE, abbr = FALSE)
+
+# Funktion für einzelnen Heatmap-Plot mit eigener Farbe
+plot_heatmap <- function(data, title, fill_color){
+  ggplot(data, aes(x = Hour, y = DayOfWeek, fill = Count)) +
+    geom_tile(color = "white") +
+    scale_fill_gradient(low = "white", high = fill_color) +
+    labs(title = title, x = "Hour of Day", y = "Day of Week", fill = "Count") +
+    theme_grey()
+}
+
+# Heatmap-Daten pro Source
+heat1 <- df %>% filter(Source == "BioBall") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+heat2 <- df %>% filter(Source == "BlueBio") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+heat3 <- df %>% filter(Source == "BTF23") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+
+# Erstelle einzelne Heatmaps
+p1 <- plot_heatmap(heat1, "BioBall", "brown")
+p2 <- plot_heatmap(heat2, "BlueBio", "blue")
+p3 <- plot_heatmap(heat3, "BTF23", "green")
+
+
+```
+
+### BioBall
+
+```{r}
+p1
+```
+
+### Blue Bioeconomy
+
+```{r}
+p2
+```
+
+### BIOTEXFUTURE
+
+```{r}
+p3
+```
+
+## A look at all surveys - overlay (3)
+
+```{r}
+
+# Beispiel-Daten
+df1 <- bio
+df2 <- blue
+df3 <- btf23
+
+df1$Source <- "BioBall"
+df2$Source <- "BlueBio"
+df3$Source <- "BTF23"
+
+df <- bind_rows(df1, df2, df3)
+df$DateTime <- dmy_hm(paste(df$Date2, df$Time))
+df$Hour <- hour(df$DateTime)
+df$DayOfWeek <- wday(df$DateTime, label = TRUE, abbr = FALSE)
+
+# Heatmap-Daten pro Source
+heat1 <- df %>% filter(Source == "BioBall") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+heat2 <- df %>% filter(Source == "BlueBio") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+heat3 <- df %>% filter(Source == "BTF23") %>%
+  group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
+
+# Überlagerte Heatmaps mit Transparenz
+ggplot() +
+  # BioBall
+  geom_tile(data = heat1, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "brown") +
+  labs(fill = "BioBall Count") +
+  
+  ggnewscale::new_scale_fill() +
+  
+  # BlueBio
+  geom_tile(data = heat2, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "darkblue") +
+  labs(fill = "BlueBio Count") +
+  
+  ggnewscale::new_scale_fill() +
+  
+  # BTF23
+  geom_tile(data = heat3, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  labs(fill = "BTF23 Count") +
+  
+  labs(title = "Überlagerte Event Heatmaps (transparent)", x = "Hour of Day", y = "Day of Week") +
+  theme_grey()
+
+
+```
