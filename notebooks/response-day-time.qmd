@@ -63,10 +63,12 @@ heat1 <- df %>%
   group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
 
 # Erstelle einzelne Heatmaps
-p1 <- plot_heatmap(heat1, "merge 3 innov Spaces", "darkgreen")
+p <- plot_heatmap(heat1, "Responses in 3 surveys", "darkgreen")
 
-# Kombiniere Plots nebeneinander
-p1
+#save and plot 
+ggsave("../figures/day-time-response-all-surveys.png", plot = p, width = 6, height = 4, units = "in", dpi = 300)
+
+p
 
 ```
 
@@ -106,9 +108,9 @@ heat3 <- df %>% filter(Source == "BTF23") %>%
   group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
 
 # Erstelle einzelne Heatmaps
-p1 <- plot_heatmap(heat1, "BioBall", "brown")
-p2 <- plot_heatmap(heat2, "BlueBio", "blue")
-p3 <- plot_heatmap(heat3, "BTF23", "green")
+p1 <- plot_heatmap(heat1, "Responses in BioBall", "brown")
+p2 <- plot_heatmap(heat2, "Responses in BlueBio", "blue")
+p3 <- plot_heatmap(heat3, "Responses in BTF23", "green")
 
 
 ```
@@ -116,18 +118,21 @@ p3 <- plot_heatmap(heat3, "BTF23", "green")
 ### BioBall
 
 ```{r}
+ggsave("../figures/day-time-response-BioBall-survey.png", plot = p1, width = 6, height = 4, units = "in", dpi = 300)
 p1
 ```
 
 ### Blue Bioeconomy
 
 ```{r}
+ggsave("../figures/day-time-response-BlueBio-survey.png", plot = p2, width = 6, height = 4, units = "in", dpi = 300)
 p2
 ```
 
 ### BIOTEXFUTURE
 
 ```{r}
+ggsave("../figures/day-time-response-BTF23-survey.png", plot = p3, width = 6, height = 4, units = "in", dpi = 300)
 p3
 ```
 
@@ -158,6 +163,31 @@ heat3 <- df %>% filter(Source == "BTF23") %>%
   group_by(DayOfWeek, Hour) %>% summarise(Count = n(), .groups = "drop")
 
 # Überlagerte Heatmaps mit Transparenz
+a <- ggplot() +
+  # BioBall
+  geom_tile(data = heat1, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "brown") +
+  labs(fill = "BioBall Count") +
+  
+  ggnewscale::new_scale_fill() +
+  
+  # BlueBio
+  geom_tile(data = heat2, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "darkblue") +
+  labs(fill = "BlueBio Count") +
+  
+  ggnewscale::new_scale_fill() +
+  
+  # BTF23
+  geom_tile(data = heat3, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
+  scale_fill_gradient(low = "white", high = "darkgreen") +
+  labs(fill = "BTF23 Count") +
+  
+  labs(title = "Responses in 3 surveys (overlay)", x = "Hour of Day", y = "Day of Week") +
+  theme_grey()
+
+ggsave("../figures/day-time-response-survey-overlay.png", plot = a, width = 8, height = 6, units = "in", dpi = 300)
+
 ggplot() +
   # BioBall
   geom_tile(data = heat1, aes(x = Hour, y = DayOfWeek, fill = Count), color = "white", alpha = 0.8) +
@@ -178,7 +208,7 @@ ggplot() +
   scale_fill_gradient(low = "white", high = "darkgreen") +
   labs(fill = "BTF23 Count") +
   
-  labs(title = "Überlagerte Event Heatmaps (transparent)", x = "Hour of Day", y = "Day of Week") +
+  labs(title = "Responses in 3 surveys (overlay)", x = "Hour of Day", y = "Day of Week") +
   theme_grey()
 
 
