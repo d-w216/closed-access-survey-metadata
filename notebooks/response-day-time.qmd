@@ -11,7 +11,7 @@ editor: visual
 
 # SONA-Survey-response-times
 
-## load packages
+## setup
 
 ```{r,message=FALSE}
 #load packages
@@ -24,8 +24,6 @@ library(patchwork)
 library(ggnewscale) 
 
 ```
-
-## load data
 
 ```{r}
 
